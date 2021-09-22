@@ -11,9 +11,13 @@ import static java.lang.String.format;
 @EqualsAndHashCode(callSuper = false)
 public class UnparsableExpressionException extends AbstractCalculatingException {
 
-    private static final String ERROR_TEMPLATE = "Got invalid characters, cannot evaluate: '%s'";
+    private static final String ERROR_TEMPLATE = "Could not evaluate expression. Reason - '%s'";
+
+    public UnparsableExpressionException(String input) {
+        super(format(ERROR_TEMPLATE, "got invalid input: " + input));
+    }
 
     public UnparsableExpressionException(List<String> invalidElements) {
-        super(format(ERROR_TEMPLATE, invalidElements));
+        super(format(ERROR_TEMPLATE, "got invalid characters: " + invalidElements));
     }
 }

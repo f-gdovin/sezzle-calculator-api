@@ -15,6 +15,10 @@ import java.util.Optional;
 public class ElementParsingService {
 
     public List<InputElement> parseIntoElements(String input) {
+        if (input == null || input.trim().isEmpty()) {
+            throw new UnparsableExpressionException(input);
+        }
+
         String[] elements = input.trim().split("\\s+");
 
         List<InputElement> parsed = new ArrayList<>();

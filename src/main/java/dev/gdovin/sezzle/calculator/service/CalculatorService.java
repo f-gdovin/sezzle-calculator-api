@@ -18,7 +18,7 @@ public class CalculatorService {
 
     public double calculate(String input) {
         List<InputElement> inputElements = elementParsingService.parseIntoElements(input);
-        expressionValidationService.validateSyntax(inputElements);
+        expressionValidationService.validateSemantics(inputElements);
 
         List<InputElement> outputElements = expressionEvaluationService.evaluate(inputElements);
         return expressionValidationService.validateResult(outputElements);

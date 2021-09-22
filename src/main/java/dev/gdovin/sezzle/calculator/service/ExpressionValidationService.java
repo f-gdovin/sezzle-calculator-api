@@ -14,7 +14,7 @@ public class ExpressionValidationService {
 
     private static final Class<Operand> OPERAND_CLASS = Operand.class;
 
-    public void validateSyntax(List<InputElement> inputElements) {
+    public void validateSemantics(List<InputElement> inputElements) {
         validateOperatorsAreBetweenOperands(inputElements);
     }
 
