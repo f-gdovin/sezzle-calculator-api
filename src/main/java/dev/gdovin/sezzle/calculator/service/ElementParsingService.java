@@ -1,7 +1,8 @@
 package dev.gdovin.sezzle.calculator.service;
 
-import dev.gdovin.sezzle.calculator.domain.*;
-import dev.gdovin.sezzle.calculator.exception.InvalidExpressionException;
+import dev.gdovin.sezzle.calculator.domain.InputElement;
+import dev.gdovin.sezzle.calculator.domain.Operand;
+import dev.gdovin.sezzle.calculator.domain.Operator;
 import dev.gdovin.sezzle.calculator.exception.UnparsableExpressionException;
 import org.springframework.stereotype.Service;
 
