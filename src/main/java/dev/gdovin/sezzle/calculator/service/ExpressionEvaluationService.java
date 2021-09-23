@@ -1,5 +1,6 @@
 package dev.gdovin.sezzle.calculator.service;
 
+import dev.gdovin.sezzle.calculator.domain.Expression;
 import dev.gdovin.sezzle.calculator.domain.InputElement;
 import dev.gdovin.sezzle.calculator.domain.Operand;
 import dev.gdovin.sezzle.calculator.domain.Operator;
@@ -15,34 +16,34 @@ import static java.lang.String.format;
 @Service
 public class ExpressionEvaluationService {
 
-    public List<InputElement> evaluate(List<InputElement> inputElements) {
-        return doEvaluate(inputElements);
+    public Expression evaluate(Expression expression) {
+        return doEvaluate(expression);
     }
 
-    private List<InputElement> doEvaluate(List<InputElement> inputElements) {
-        log.debug("About to evaluate the following expression: '{}'.", inputElements);
+    private Expression doEvaluate(Expression expression) {
+        log.debug("About to evaluate the following expression: '{}'.", expression);
 
-        int expressionStartIndex = findStartOfExpressionWithHighestWeight(inputElements);
+        int expressionStartIndex = findStartOfExpressionWithHighestWeight(expression);
 
         // exit condition, we have no more expressions to simplify
         if (expressionStartIndex < 0) {
-            log.debug("There is no operator left to evaluate, returning the current expression '{}'.", inputElements);
-            return inputElements;
+            log.debug("There is no operator left to evaluate, returning the current expression '{}'.", expression);
+            return expression;
         }
 
         // remove from this position three times, as rest shifts
-        InputElement leftElem = inputElements.remove(expressionStartIndex);
-        InputElement operator = inputElements.remove(expressionStartIndex);
-        InputElement rightElm = inputElements.remove(expressionStartIndex);
+        InputElement leftElem = expression.remove(expressionStartIndex);
+        InputElement operator = expression.remove(expressionStartIndex);
+        InputElement rightElm = expression.remove(expressionStartIndex);
         log.debug("About to evaluate the following sub-expression: '{} {} {}'", leftElem, operator, rightElm);
 
         InputElement simplified = simplifyExpression(leftElem, operator, rightElm);
         log.debug("Subexpression: '{} {} {}' evaluated to '{}'", leftElem, operator, rightElm, simplified);
 
-        inputElements.add(expressionStartIndex, simplified);
+        expression.add(expressionStartIndex, simplified);
 
-        log.debug("Expression {} was successfully simplified, running next iteration.", inputElements);
-        return doEvaluate(inputElements);
+        log.debug("Expression {} was successfully simplified, running next iteration.", expression);
+        return doEvaluate(expression);
     }
 
     private InputElement simplifyExpression(InputElement left, InputElement center, InputElement right) {
@@ -58,12 +59,12 @@ public class ExpressionEvaluationService {
         return operator.apply(leftOperand, rightOperand);
     }
 
-    private int findStartOfExpressionWithHighestWeight(List<InputElement> inputElements) {
+    private int findStartOfExpressionWithHighestWeight(Expression expression) {
         int highestOperatorWeight = -1;
         int highestOperatorIndex = -1;
 
-        for (int index = 0; index < inputElements.size(); index ++) {
-            InputElement el = inputElements.get(index);
+        for (int index = 0; index < expression.size(); index ++) {
+            InputElement el = expression.get(index);
             if (!el.isOperand()) {
                 Operator operator = (Operator) el;
                 if (highestOperatorWeight < operator.getWeight()) {

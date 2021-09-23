@@ -1,6 +1,6 @@
 package dev.gdovin.sezzle.calculator.service;
 
-import dev.gdovin.sezzle.calculator.domain.InputElement;
+import dev.gdovin.sezzle.calculator.domain.Expression;
 import dev.gdovin.sezzle.calculator.domain.Operand;
 import dev.gdovin.sezzle.calculator.domain.Operator;
 import dev.gdovin.sezzle.calculator.exception.UnparsableExpressionException;
@@ -9,7 +9,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -37,10 +36,10 @@ class ElementParsingServiceTest {
     @Test
     void shouldParseIntoCorrectListOfElements() {
         String input = "-2 + 4 * 5     / 1 + 0  ";
-        List<InputElement> expected = List.of(Operand.of(-2), Operator.PLUS, Operand.of(4), Operator.MULTIPLY,
+        Expression expected = new Expression(Operand.of(-2), Operator.PLUS, Operand.of(4), Operator.MULTIPLY,
                 Operand.of(5), Operator.DIVIDE, Operand.of(1), Operator.PLUS, Operand.of(0));
 
-        List<InputElement> actual = service.parseIntoElements(input);
+        Expression actual = service.parseIntoElements(input);
 
         assertThat(actual, is(expected));
     }

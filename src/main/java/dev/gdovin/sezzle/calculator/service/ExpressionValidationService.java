@@ -1,12 +1,11 @@
 package dev.gdovin.sezzle.calculator.service;
 
+import dev.gdovin.sezzle.calculator.domain.Expression;
 import dev.gdovin.sezzle.calculator.domain.InputElement;
 import dev.gdovin.sezzle.calculator.domain.Operand;
 import dev.gdovin.sezzle.calculator.exception.InvalidExpressionException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 import static java.lang.String.format;
 
@@ -14,25 +13,25 @@ import static java.lang.String.format;
 @Service
 public class ExpressionValidationService {
 
-    public void validateSemantics(List<InputElement> inputElements) {
-        validateOperatorsAreBetweenOperands(inputElements);
+    public void validateSemantics(Expression expression) {
+        validateOperatorsAreBetweenOperands(expression);
     }
 
-    public Double validateResult(List<InputElement> outputElements) {
-        if (outputElements.size() != 1 || !outputElements.get(0).isOperand()) {
-            throwResultIsNotASingleNumberError(outputElements);
+    public Double validateResult(Expression output) {
+        if (output.size() != 1 || !output.get(0).isOperand()) {
+            throwResultIsNotASingleNumberError(output);
         }
-        return ((Operand) outputElements.get(0)).getValue();
+        return ((Operand) output.get(0)).getValue();
     }
 
-    private void validateOperatorsAreBetweenOperands(List<InputElement> inputElements) {
-        log.debug("About to validate the semantics of an expression: {}.", inputElements);
-        verifyListStartsAndEndsWithOperands(inputElements);
-        verifyThereAreNotExactlyTwoElements(inputElements);
+    private void validateOperatorsAreBetweenOperands(Expression expression) {
+        log.debug("About to validate the semantics of an expression: {}.", expression);
+        verifyListStartsAndEndsWithOperands(expression);
+        verifyThereAreNotExactlyTwoElements(expression);
 
-        for (int index = 0; index < inputElements.size() - 1; index++) {
-            InputElement left = inputElements.get(index);
-            InputElement right = inputElements.get(index + 1);
+        for (int index = 0; index < expression.size() - 1; index++) {
+            InputElement left = expression.get(index);
+            InputElement right = expression.get(index + 1);
 
             if (left.isOperand() && right.isOperand()) {
                 throwNoOperatorBetweenOperandsError(left, right);
@@ -42,21 +41,21 @@ public class ExpressionValidationService {
                 throwNoOperandBetweenOperatorsError(left, right);
             }
         }
-        log.debug("Expression {} is semantically correct.", inputElements);
+        log.debug("Expression {} is semantically correct.", expression);
     }
 
-    private static void verifyListStartsAndEndsWithOperands(List<InputElement> inputElements) {
-        if (!inputElements.get(0).isOperand() || !inputElements.get(inputElements.size() - 1).isOperand()) {
-            log.info("Expression {} is invalid: it does not start and end with an operand, exiting now.", inputElements);
+    private static void verifyListStartsAndEndsWithOperands(Expression expression) {
+        if (!expression.get(0).isOperand() || !expression.get(expression.size() - 1).isOperand()) {
+            log.info("Expression {} is invalid: it does not start and end with an operand, exiting now.", expression);
             throw new InvalidExpressionException("expected an operand at both the start and the end of an expression," +
                     " but got an operator");
         }
     }
 
-    private static void verifyThereAreNotExactlyTwoElements(List<InputElement> inputElements) {
-        if (inputElements.size() == 2) {
-            log.info("Expression {} is invalid: it contains exactly two elements, exiting now.", inputElements);
-            throwNoOperatorBetweenOperandsError(inputElements.get(0), inputElements.get(1));
+    private static void verifyThereAreNotExactlyTwoElements(Expression expression) {
+        if (expression.size() == 2) {
+            log.info("Expression {} is invalid: it contains exactly two elements, exiting now.", expression);
+            throwNoOperatorBetweenOperandsError(expression.get(0), expression.get(1));
         }
     }
 
@@ -72,7 +71,7 @@ public class ExpressionValidationService {
                 "found two operators ('%s', '%s') without an operand between them", left, right));
     }
 
-    private static void throwResultIsNotASingleNumberError(List<InputElement> output) {
+    private static void throwResultIsNotASingleNumberError(Expression output) {
         log.info("Result {} is invalid: it is not a single number.", output);
         throw new InvalidExpressionException(format("expected a single number as a result, but got '%s'", output));
     }

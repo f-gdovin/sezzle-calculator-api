@@ -1,5 +1,6 @@
 package dev.gdovin.sezzle.calculator.service;
 
+import dev.gdovin.sezzle.calculator.domain.Expression;
 import dev.gdovin.sezzle.calculator.domain.InputElement;
 import dev.gdovin.sezzle.calculator.domain.Operand;
 import dev.gdovin.sezzle.calculator.domain.Operator;
@@ -9,10 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.List;
 import java.util.stream.Stream;
 
-import static dev.gdovin.sezzle.calculator.service.InputElementUtils.elements;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -26,12 +25,12 @@ class ExpressionEvaluationServiceTest {
     @DisplayName("Should correctly evaluate and simplify the expression")
     void shouldCorrectlyEvaluateListOfElements() {
         // "-2 + 4 * 15 / 0.25 + 0.01"
-        List<InputElement> input = elements(
+        Expression input = new Expression(
                 Operand.of(-2), Operator.PLUS, Operand.of(4), Operator.MULTIPLY, Operand.of(15),
                 Operator.DIVIDE, Operand.of(0.25), Operator.PLUS, Operand.of(0.01)
         );
 
-        List<InputElement> actual = service.evaluate(input);
+        Expression actual = service.evaluate(input);
 
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), is(Operand.of(238.01)));
@@ -41,7 +40,7 @@ class ExpressionEvaluationServiceTest {
     @MethodSource("paramsForNearZeroDivision")
     @DisplayName("Should correctly divide by almost a zero")
     void shouldCorrectlyDivideByAlmostZero(InputElement almostZero) {
-        List<InputElement> input = elements(Operand.of(10), Operator.DIVIDE, almostZero);
+        Expression input = new Expression(Operand.of(10), Operator.DIVIDE, almostZero);
 
         assertDoesNotThrow(() -> service.evaluate(input));
     }
@@ -58,7 +57,7 @@ class ExpressionEvaluationServiceTest {
     @Test
     @DisplayName("Should fail to evaluate division by zero")
     void shouldFailWithDivisionByZero() {
-        List<InputElement> input = elements(Operand.of(5), Operator.DIVIDE, Operand.of(0));
+        Expression input = new Expression(Operand.of(5), Operator.DIVIDE, Operand.of(0));
         assertThrows(DivisionByZeroException.class, () -> service.evaluate(input));
     }
 }

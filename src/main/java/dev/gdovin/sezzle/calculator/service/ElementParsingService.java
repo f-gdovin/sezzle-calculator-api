@@ -1,5 +1,6 @@
 package dev.gdovin.sezzle.calculator.service;
 
+import dev.gdovin.sezzle.calculator.domain.Expression;
 import dev.gdovin.sezzle.calculator.domain.InputElement;
 import dev.gdovin.sezzle.calculator.domain.Operand;
 import dev.gdovin.sezzle.calculator.domain.Operator;
@@ -16,7 +17,7 @@ import java.util.Optional;
 @Service
 public class ElementParsingService {
 
-    public List<InputElement> parseIntoElements(String input) {
+    public Expression parseIntoElements(String input) {
         if (input == null || input.trim().isEmpty()) {
             log.info("Expression '{}' is either null, or empty, exiting now.", input);
             throw new UnparsableExpressionException(input);
@@ -25,7 +26,7 @@ public class ElementParsingService {
         String[] elements = input.trim().split("\\s+");
         log.debug("Got following elements by splitting on whitespaces: {}.", Arrays.asList(elements));
 
-        List<InputElement> parsed = new ArrayList<>();
+        Expression parsed = new Expression();
         List<String> nonparsables = new ArrayList<>();
 
         for (String elementToParse : elements) {

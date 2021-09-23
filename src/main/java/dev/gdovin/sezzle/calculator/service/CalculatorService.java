@@ -1,5 +1,6 @@
 package dev.gdovin.sezzle.calculator.service;
 
+import dev.gdovin.sezzle.calculator.domain.Expression;
 import dev.gdovin.sezzle.calculator.domain.InputElement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,10 +19,10 @@ public class CalculatorService {
 
     public double calculate(String input) {
         log.info("About to evaluate the expression '{}'", input);
-        List<InputElement> inputElements = elementParsingService.parseIntoElements(input);
-        expressionValidationService.validateSemantics(inputElements);
+        Expression expression = elementParsingService.parseIntoElements(input);
+        expressionValidationService.validateSemantics(expression);
 
-        List<InputElement> outputElements = expressionEvaluationService.evaluate(inputElements);
+        Expression outputElements = expressionEvaluationService.evaluate(expression);
         final double result = expressionValidationService.validateResult(outputElements);
 
         log.info("Expression successfully evaluated to '{}'", result);
