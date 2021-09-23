@@ -1,4 +1,4 @@
-package dev.gdovin.sezzle.calculator.domain;
+package dev.gdovin.sezzle.calculator.api;
 
 import lombok.Value;
 
