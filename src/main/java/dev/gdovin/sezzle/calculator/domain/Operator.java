@@ -62,4 +62,9 @@ public enum Operator implements InputElement {
 
     public abstract Operand apply(Operand first, Operand second);
     public abstract int getWeight();
+
+    @Override
+    public String toString() {
+        return symbol;
+    }
 }

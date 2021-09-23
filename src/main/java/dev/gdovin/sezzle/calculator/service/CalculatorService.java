@@ -17,10 +17,14 @@ public class CalculatorService {
     private final ExpressionEvaluationService expressionEvaluationService;
 
     public double calculate(String input) {
+        log.info("About to evaluate the expression '{}'", input);
         List<InputElement> inputElements = elementParsingService.parseIntoElements(input);
         expressionValidationService.validateSemantics(inputElements);
 
         List<InputElement> outputElements = expressionEvaluationService.evaluate(inputElements);
-        return expressionValidationService.validateResult(outputElements);
+        final double result = expressionValidationService.validateResult(outputElements);
+
+        log.info("Expression successfully evaluated to '{}'", result);
+        return result;
     }
 }

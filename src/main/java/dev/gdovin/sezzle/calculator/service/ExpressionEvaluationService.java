@@ -4,12 +4,14 @@ import dev.gdovin.sezzle.calculator.domain.InputElement;
 import dev.gdovin.sezzle.calculator.domain.Operand;
 import dev.gdovin.sezzle.calculator.domain.Operator;
 import dev.gdovin.sezzle.calculator.exception.InvalidExpressionException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 import static java.lang.String.format;
 
+@Slf4j
 @Service
 public class ExpressionEvaluationService {
 
@@ -18,10 +20,13 @@ public class ExpressionEvaluationService {
     }
 
     private List<InputElement> doEvaluate(List<InputElement> inputElements) {
+        log.debug("About to evaluate the following expression: '{}'.", inputElements);
+
         int expressionStartIndex = findStartOfExpressionWithHighestWeight(inputElements);
 
         // exit condition, we have no more expressions to simplify
         if (expressionStartIndex < 0) {
+            log.debug("There is no operator left to evaluate, returning the current expression '{}'.", inputElements);
             return inputElements;
         }
 
@@ -29,11 +34,14 @@ public class ExpressionEvaluationService {
         InputElement leftElem = inputElements.remove(expressionStartIndex);
         InputElement operator = inputElements.remove(expressionStartIndex);
         InputElement rightElm = inputElements.remove(expressionStartIndex);
+        log.debug("About to evaluate the following sub-expression: '{} {} {}'", leftElem, operator, rightElm);
 
         InputElement simplified = simplifyExpression(leftElem, operator, rightElm);
+        log.debug("Subexpression: '{} {} {}' evaluated to '{}'", leftElem, operator, rightElm, simplified);
 
         inputElements.add(expressionStartIndex, simplified);
 
+        log.debug("Expression {} was successfully simplified, running next iteration.", inputElements);
         return doEvaluate(inputElements);
     }
 

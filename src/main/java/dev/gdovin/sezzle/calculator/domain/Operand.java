@@ -10,4 +10,9 @@ public class Operand implements InputElement {
     }
 
     double value;
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
 }
