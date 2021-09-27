@@ -22,11 +22,13 @@ import java.util.ConcurrentModificationException;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CalculatorController.class)
@@ -60,23 +62,25 @@ class CalculatorControllerTest {
 
     @ParameterizedTest
     @MethodSource("paramsForErrors")
-    public void shouldReturnCorrectStatusCodeBasedOnError(
-            Class<? extends Exception> thrown, ResultMatcher expectedStatusCode) throws Exception {
+    public void shouldReturnCorrectStatusCodeBasedOnError(Exception thrown, ResultMatcher expectedStatusCode)
+            throws Exception {
         when(service.calculate(INPUT_STRING)).thenThrow(thrown);
 
         postCalculationRequest()
-                .andExpect(expectedStatusCode);
+                .andExpect(expectedStatusCode)
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("error", is(notNullValue())));
     }
 
     private static Stream<Arguments> paramsForErrors() {
         return Stream.of(
-                Arguments.of(DivisionByZeroException.class,          status().isBadRequest()),
-                Arguments.of(InvalidExpressionException.class,       status().isBadRequest()),
-                Arguments.of(UnparsableExpressionException.class,    status().isBadRequest()),
+                Arguments.of(new DivisionByZeroException(),                status().isBadRequest()),
+                Arguments.of(new InvalidExpressionException("just fail"),  status().isBadRequest()),
+                Arguments.of(new UnparsableExpressionException("failed"),  status().isBadRequest()),
 
-                Arguments.of(NullPointerException.class,             status().isInternalServerError()),
-                Arguments.of(IndexOutOfBoundsException.class,        status().isInternalServerError()),
-                Arguments.of(ConcurrentModificationException.class,  status().isInternalServerError())
+                Arguments.of(new NullPointerException(),                   status().isInternalServerError()),
+                Arguments.of(new IndexOutOfBoundsException(),              status().isInternalServerError()),
+                Arguments.of(new ConcurrentModificationException(),        status().isInternalServerError())
         );
     }
 

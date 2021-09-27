@@ -8,8 +8,6 @@ import dev.gdovin.sezzle.calculator.exception.InvalidExpressionException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 import static java.lang.String.format;
 
 @Slf4j

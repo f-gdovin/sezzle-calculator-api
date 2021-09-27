@@ -23,10 +23,6 @@ class SezzleCalculatorIT {
     @Autowired
     private CalculatorService service;
 
-    @Test
-    void contextLoads() {
-    }
-
     @ParameterizedTest
     @MethodSource("paramsForSuccessfulCalculation")
     @DisplayName("Should calculate the result correctly given valid input")
